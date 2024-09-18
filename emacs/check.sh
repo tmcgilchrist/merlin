@@ -3,12 +3,12 @@
 # Adapted from https://github.com/purcell/package-lint/blob/master/run-tests.sh
 EMACS="${EMACS:=emacs}"
 
-NEEDED_PACKAGES="package-lint company iedit auto-complete"
+NEEDED_PACKAGES="package-lint company iedit auto-complete compat"
 
 ELS_TO_CHECK=*.el
 # To reduce the amount of false positives we only package-lint files
 # that are actual installable packages.
-PKGS_TO_CHECK="merlin.el merlin-ac.el merlin-company.el merlin-iedit.el"
+PKGS_TO_CHECK="merlin.el merlin-ac.el merlin-company.el merlin-iedit.el merlin-cap.el tests/merlin-cap-test.el"
 
 INIT_PACKAGE_EL="(progn \
   (require 'package) \
@@ -50,3 +50,11 @@ EMACS_PACKAGE_LINT_IGNORE=1
          --eval "(require 'package-lint)" \
          -f package-lint-batch-and-exit \
          ${PKGS_TO_CHECK} || [ -n "${EMACS_PACKAGE_LINT_IGNORE:+x}" ]
+
+# Run tests in batch mode.
+"$EMACS" -Q -batch \
+         --eval "$INIT_PACKAGE_EL" \
+         -L . \
+         --eval "(progn\
+         (load-file \"tests/merlin-cap-test.el\")\
+         (ert-run-tests-batch-and-exit))"
