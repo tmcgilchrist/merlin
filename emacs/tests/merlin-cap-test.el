@@ -8,7 +8,7 @@
 ;; Created: 13 Sep 2024
 ;; Version: 0.1
 ;; Keywords: ocaml languages
-;; Package-Requires: ((emacs "25.1"))
+;; Package-Requires: ((emacs "25.1") (compat))
 ;; URL: http://github.com/ocaml/merlin
 
 ;;; Commentary:
@@ -78,7 +78,7 @@
   (with-current-buffer messages-buffer-name
     (save-excursion
       (forward-line -1)
-      (buffer-substring (point) (line-end-position)))))
+      (buffer-substring (point) (pos-eol)))))
 
 (defmacro merlin-cap--with-test-buffer (&rest body)
   "Run BODY with a temp buffer set up for Merlin completion."
@@ -112,14 +112,14 @@ completion, and MESSAGE is the message printed."
     (message "\n")
     (message "[no message]")
     (completion-at-point)
-    (let ((end (line-end-position))
+    (let ((end (pos-eol))
           ;; Just so the ERT error renders more nicely
           (point (point)))
       (should (equal (list (buffer-substring start point)
                            (buffer-substring point end)
                            (merlin-cap--current-message))
                      (list new-prefix new-suffix message))))
-    (delete-region start (line-end-position))))
+    (delete-region start (pos-eol))))
 
 (ert-deftest test-merlin-cap-completion ()
   (with-temp-buffer
